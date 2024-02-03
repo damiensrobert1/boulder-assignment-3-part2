@@ -1,11 +1,11 @@
 link: compile
 	gcc writer.o -o writer
 
-compile: main
+compile: main 
 	gcc -c -Wall writer.c -o writer.o
 
 main:
-	echo "compilation ended up"
+	echo "compilation succeeded"
 
 clean:
 	rm -f writer.o

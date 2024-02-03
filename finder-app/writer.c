@@ -6,10 +6,9 @@
 #include <linux/limits.h>
 
 int main (int argc,char **argv) {
-   int ret = 0;
 
    if (argc != 3) {
-      ret = 1;
+      exit(EXIT_FAILURE);
    } else {
       FILE *file;
       char filepath[PATH_MAX] = "";
@@ -18,19 +17,19 @@ int main (int argc,char **argv) {
       if (strlen(argv[1]) <= PATH_MAX) {
          strcpy(filepath, argv[1]);
       } else {
-         ret = 1;
+         exit(EXIT_FAILURE);
       }
 
       if (strlen(argv[1]) <= ARG_MAX) {
          strcpy(str, argv[2]);
       } else {
-         ret = 1;
+         exit(EXIT_FAILURE);
       }
 
       file = fopen(filepath,"w");
 
       if (file == NULL) {
-	 ret = 1;
+	 exit(EXIT_FAILURE);
       } else {
          fprintf(file,"%s", str);
       }
@@ -38,5 +37,5 @@ int main (int argc,char **argv) {
       fclose(file);
    }
 
-   exit(ret);
+   exit(EXIT_SUCCESS);
 }
