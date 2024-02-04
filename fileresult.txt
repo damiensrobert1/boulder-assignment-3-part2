@@ -1,0 +1,4 @@
+echo "compilation succeeded"
+compilation succeeded
+aarch64-none-linux-gnu-gcc -c -Wall writer.c -o writer.o
+aarch64-none-linux-gnu-gcc writer.o -o writer
