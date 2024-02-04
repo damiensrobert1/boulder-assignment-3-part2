@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include "systemcalls.h"
 
 /**
@@ -16,8 +17,16 @@ bool do_system(const char *cmd)
  *   and return a boolean true if the system() call completed with success
  *   or false() if it returned a failure
 */
+    bool ret = true;
+    int sysret = 0;
+    
+    sysret = system(cmd);
 
-    return true;
+    if (sysret != 0){
+        ret = false;
+    }
+
+    return ret;
 }
 
 /**
