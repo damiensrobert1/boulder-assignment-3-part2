@@ -1,8 +1,8 @@
 link: compile
-	gcc writer.o -o writer
+	${CROSS_COMPILE}gcc writer.o -o writer
 
 compile: main 
-	gcc -c -Wall writer.c -o writer.o
+	${CROSS_COMPILE}gcc -c -Wall writer.c -o writer.o
 
 main:
 	echo "compilation succeeded"
