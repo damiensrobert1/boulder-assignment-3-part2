@@ -1,4 +1,7 @@
 #include <stdlib.h>
+#include <unistd.h>
+#include <sys/wait.h>
+#include <fcntl.h>
 #include "systemcalls.h"
 
 /**
@@ -56,7 +59,7 @@ bool do_exec(int count, ...)
     command[count] = NULL;
     // this line is to avoid a compile warning before your implementation is complete
     // and may be removed
-    command[count] = command[count];
+    //command[count] = command[count];
 
 /*
  * TODO:
@@ -67,9 +70,28 @@ bool do_exec(int count, ...)
  *   as second argument to the execv() command.
  *
 */
+    pid_t forked = fork();
+    if(forked < 0)
+    {
+    	perror("fork failed");
+    	return false;
+    }
+    else if(forked == 0)
+    {
+    	execv(command[0], command);
+    	
+    	exit(1);
+    }
+    else
+    {
+    	int status;
+    	waitpid(forked, &status, 0);
+    	va_end(args);
+    	return (WIFEXITED(status) && WEXITSTATUS(status) == 0) ? true : false;
+    }
 
     va_end(args);
-
+	
     return true;
 }
 
@@ -91,7 +113,7 @@ bool do_exec_redirect(const char *outputfile, int count, ...)
     command[count] = NULL;
     // this line is to avoid a compile warning before your implementation is complete
     // and may be removed
-    command[count] = command[count];
+    //command[count] = command[count];
 
 
 /*
@@ -102,6 +124,37 @@ bool do_exec_redirect(const char *outputfile, int count, ...)
  *
 */
 
+    int kidpid;
+    	
+    int fd = open(outputfile, O_WRONLY|O_TRUNC|O_CREAT, 0644);
+    if (fd < 0) 
+    { 
+    	perror("open"); 
+    	exit(1); 
+    }
+    switch (kidpid = fork()) {
+      case -1: 
+           perror("fork"); 
+           exit(1);
+      case 0:
+          if (dup2(fd, 1) < 0) 
+          { 
+          	perror("dup2"); 
+          	exit(1); 
+          }
+          close(fd);
+          execv(command[0], command); 
+          perror("execv"); 
+          exit(1);
+      default:
+          close(fd);
+          int status;
+          waitpid(kidpid, &status, 0);
+          va_end(args);
+          if(WIFEXITED(status) && WEXITSTATUS(status) == 0)
+          	return true;
+          return false;
+    }
     va_end(args);
 
     return true;
